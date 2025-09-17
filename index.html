@@ -1,0 +1,3110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Website Comparison Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+  <style>
+    body { font-family: sans-serif; max-width: 90%; margin: auto; }
+    .search { margin-bottom: 15px; width: 100%; padding: 8px; }
+    .entry { border-bottom: 5px solid #ccc; margin-bottom: 30px; padding-bottom: 20px; }
+
+    .images-labels {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .images {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+    }
+    .images img {
+      width: 48%;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+      height: 400px;
+      object-fit: cover;
+    }
+
+    .desc-col-full {
+      margin-top: 10px;
+      font-style: italic;
+      color: #555;
+    }
+
+    .desc-col-full strong {
+      color: #333;
+      margin-right: 5px;
+    }
+
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    .pagination li {
+      display: inline-block;
+    }
+
+    .pagination li a,
+    .pagination li button {
+      text-decoration: none;
+      color: #5a2a82;
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f7f7f7;
+      cursor: pointer;
+    }
+
+    .pagination li.active a,
+    .pagination li.active button {
+      background-color: #5a2a82;
+      color: white;
+    }
+    .filters, .rows-per-page {
+      margin: 10px 0;
+      font-size: 0.9em;
+    }
+    label {
+      margin-right: 15px;
+    }
+
+    .statistics {
+    background-color: #f9f9f9;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+  }
+  .statistics p {
+    margin: 4px 0;
+  }
+  .toggle-button {
+    font-size: 0.8em;
+    margin-left: 10px;
+    padding: 4px 10px;
+    background-color: #5a2a82;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .toggle-button:hover {
+    background-color: #481e66;
+  }
+
+  .priority {
+    display: none !important;
+  }
+
+  .lightbox-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+    text-align: center;
+  }
+
+  .lightbox-modal img {
+    margin: auto;
+    max-width: 90%;
+    max-height: 90%;
+    display: block;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #ffffff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .lightbox-close:hover,
+  .lightbox-close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .lightbox-thumb {
+    cursor: zoom-in;
+  }
+
+  .lightbox-nav {
+    position: absolute;
+    top: 50%;
+    color: lightgray;
+    opacity: 0.2;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    z-index: 10000;
+    padding: 8px;
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    transform: translateY(-50%);
+  }
+  .lightbox-nav:hover {
+    background-color: rgba(0,0,0,0.6);
+  }
+
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+  }
+
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: max-content;
+    max-width: 250px;
+    background-color: #555;
+    color: #fff;
+    text-align: left;
+    padding: 5px 8px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 10;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.8em;
+  }
+
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+  .cropped-note {
+    color: #d32f2f; /* red */
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-top: 4px;
+  }
+
+  </style>
+</head>
+<body>
+  <h1>Website Comparison Dashboard</h1>
+  <h2>Data Summary</h2>
+  <div class="statistics">
+    <p><strong>Total Sites:</strong> 1695</p>
+    <p><strong>Sites Analyzed:</strong> 818</p>
+  </div>
+
+  
+    <div class="section">
+      <h2>
+        Blocked-Unsupported Sites
+        <button class="toggle-button" data-target="table-1">Show Table</button>
+      </h2>
+      <h4> Total results: 6 </h4>
+      <div class="count" id="count-1">Showing 0 results</div>
+      <div id="table-1" class="table-content" style="display: none;">
+        <div id="list-1" class="list-wrapper">
+          <input class="search" placeholder="Search Blocked-Unsupported Sites..." />
+
+          <label>
+            Rows per page:
+            <select class="rows-per-page" data-list-id="list-1">
+              <option>5</option>
+              <option>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option value="1000">All</option>
+            </select>
+          </label>
+
+          <label>
+            Priority:
+            <select class="filter-priority" data-list-id="list-1">
+              <option value="">All</option>
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+              <option value="P4">P4</option>
+            </select>
+          </label>
+
+          <label>
+           <input type="checkbox" class="toggle-p5" data-list-id="list-1">
+            Show 'Not fixable'
+        </label>
+    
+          <div class="list">
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/miwolterskluwer_76/miwolterskluwer_76_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/miwolterskluwer_76/miwolterskluwer_76_overlay.png" />
+                  <img src="./web_screenshots/Chrome/miwolterskluwer_76/miwolterskluwer_76_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/miwolterskluwer_76/miwolterskluwer_76_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://miwolterskluwer.com" class="url" target="_blank" rel="noopener noreferrer">https://miwolterskluwer.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows a message that states 'Lo sentimos, la aplicación no funciona actualmente con tu navegador' which translates to 'We're sorry, the application doesn't currently work with your browser'.<br>4. blocked-unsupported because the website does not support the firefox browser.<br>5. P1 – Immediate because the website does not support the firefox browser.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/royalcaribbean_247/royalcaribbean_247_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/royalcaribbean_247/royalcaribbean_247_overlay.png" />
+                  <img src="./web_screenshots/Chrome/royalcaribbean_247/royalcaribbean_247_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/royalcaribbean_247/royalcaribbean_247_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.royalcaribbean.com" class="url" target="_blank" rel="noopener noreferrer">https://www.royalcaribbean.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox site (firefox_image) is the main website with a search bar and a booking tool, while the chrome site (chrome_image) is a message that states 'OOPS... LOOKS LIKE ROYALCARIBBEAN.COM IS ON VACATION'.<br>4. blocked-unsupported because the firefox site is the main website, but the chrome site is a message that the website is on vacation.<br>5. P1 - Immediate because the main website is not loaded in firefox (firefox_image).</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/metropoles_256/metropoles_256_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/metropoles_256/metropoles_256_overlay.png" />
+                  <img src="./web_screenshots/Chrome/metropoles_256/metropoles_256_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/metropoles_256/metropoles_256_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.metropoles.com" class="url" target="_blank" rel="noopener noreferrer">https://www.metropoles.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows the website's content, while the chrome rendering (chrome_image) shows an error message.<br>4. blocked-unsupported because the website is inaccessible in chrome.<br>5. P1 - Immediate</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/smile_299/smile_299_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/smile_299/smile_299_overlay.png" />
+                  <img src="./web_screenshots/Chrome/smile_299/smile_299_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/smile_299/smile_299_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://smile.lasallebajio.edu.mx" class="url" target="_blank" rel="noopener noreferrer">https://smile.lasallebajio.edu.mx
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The chrome rendering (chrome_image) shows a message that states 'No cuentas con acceso' (You do not have access). The firefox rendering (firefox_image) shows the IIS 8 logo.<br>4. blocked-unsupported because the firefox site is unsupported.<br>5. P1 - Immediate because the firefox site is unsupported.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/cdn3_315/cdn3_315_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/cdn3_315/cdn3_315_overlay.png" />
+                  <img src="./web_screenshots/Chrome/cdn3_315/cdn3_315_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/cdn3_315/cdn3_315_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://cdn3.digialm.com" class="url" target="_blank" rel="noopener noreferrer">https://cdn3.digialm.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows the website, while the chrome rendering (chrome_image) shows an error message.<br>4. blocked-unsupported because the website does not load in chrome.<br>5. P1 - Immediate because the website does not load.</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/intuit_354/intuit_354_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/intuit_354/intuit_354_overlay.png" />
+                  <img src="./web_screenshots/Chrome/intuit_354/intuit_354_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/intuit_354/intuit_354_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.intuit.com" class="url" target="_blank" rel="noopener noreferrer">https://www.intuit.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows the website's content, while the chrome rendering (chrome_image) shows an error message.<br>4. blocked-unsupported because the website does not load in chrome, which is a supported browser.<br>5. P1 - Immediate</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/ebanking_ch4_536/ebanking_ch4_536_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/ebanking_ch4_536/ebanking_ch4_536_overlay.png" />
+                  <img src="./web_screenshots/Chrome/ebanking_ch4_536/ebanking_ch4_536_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/ebanking_ch4_536/ebanking_ch4_536_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://ebanking-ch4.ubs.com" class="url" target="_blank" rel="noopener noreferrer">https://ebanking-ch4.ubs.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows a message that states 'Outdated browser version'.<br>4. blocked-unsupported because the message indicates that the firefox browser is not supported.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/calendar_569/calendar_569_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/calendar_569/calendar_569_overlay.png" />
+                  <img src="./web_screenshots/Chrome/calendar_569/calendar_569_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/calendar_569/calendar_569_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://calendar.google.com" class="url" target="_blank" rel="noopener noreferrer">https://calendar.google.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows the google calendar site, while the chrome rendering (chrome_image) shows the google sign in page.<br>4. blocked-unsupported because the firefox site is not supported.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/atch_610/atch_610_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/atch_610/atch_610_overlay.png" />
+                  <img src="./web_screenshots/Chrome/atch_610/atch_610_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/atch_610/atch_610_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://watch.sling.com" class="url" target="_blank" rel="noopener noreferrer">https://watch.sling.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) has a message that states 'Looks like a location issue. [11-6]' and a button that says 'RETRY'. The chrome rendering (chrome_image) has a message that states 'Looks like you are using an unsupported browser' and a button that says 'DISMISS'.<br>4. blocked-unsupported because the firefox site is not useable due to the message indicating a location issue.<br>5. P1 - Immediate because the firefox site is not useable.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/banking_636/banking_636_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/banking_636/banking_636_overlay.png" />
+                  <img src="./web_screenshots/Chrome/banking_636/banking_636_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/banking_636/banking_636_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://banking.westpac.com.au" class="url" target="_blank" rel="noopener noreferrer">https://banking.westpac.com.au
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) is the login page for westpac online banking. The chrome rendering (chrome_image) is a message that states 'Browser Incompatible'.<br>4. blocked-unsupported because the firefox site is unsupported.<br>5. P1 - Immediate because the firefox site is unsupported.</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/anitaku_951/anitaku_951_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/anitaku_951/anitaku_951_overlay.png" />
+                  <img src="./web_screenshots/Chrome/anitaku_951/anitaku_951_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/anitaku_951/anitaku_951_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://anitaku.pe" class="url" target="_blank" rel="noopener noreferrer">https://anitaku.pe
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows that the site is blocked due to a security threat.<br>4. blocked-unsupported because the website is blocked in firefox.<br>5. P1 - Immediate because the website is inaccessible in firefox.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+          </div>
+    
+          <div class="pagination"></div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="section">
+      <h2>
+        Significant Visual Sites
+        <button class="toggle-button" data-target="table-2">Show Table</button>
+      </h2>
+      <h4> Total results: 19 </h4>
+      <div class="count" id="count-2">Showing 0 results</div>
+      <div id="table-2" class="table-content" style="display: none;">
+        <div id="list-2" class="list-wrapper">
+          <input class="search" placeholder="Search Significant Visual Sites..." />
+
+          <label>
+            Rows per page:
+            <select class="rows-per-page" data-list-id="list-2">
+              <option>5</option>
+              <option>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option value="1000">All</option>
+            </select>
+          </label>
+
+          <label>
+            Priority:
+            <select class="filter-priority" data-list-id="list-2">
+              <option value="">All</option>
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+              <option value="P4">P4</option>
+            </select>
+          </label>
+
+          <label>
+           <input type="checkbox" class="toggle-p5" data-list-id="list-2">
+            Show 'Not fixable'
+        </label>
+    
+          <div class="list">
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/taxservice_4/taxservice_4_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/taxservice_4/taxservice_4_overlay.png" />
+                  <img src="./web_screenshots/Chrome/taxservice_4/taxservice_4_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/taxservice_4/taxservice_4_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="http://taxservice.mof.gov.la" class="url" target="_blank" rel="noopener noreferrer">http://taxservice.mof.gov.la
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The header.<br>3. The top of the firefox rendering (firefox_image) is many of the elements and a large banner.<br>4. significant-visual because the header is many of the elements and the banner, which are both missing in the firefox rendering (firefox_image).<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/linkedin_40/linkedin_40_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/linkedin_40/linkedin_40_overlay.png" />
+                  <img src="./web_screenshots/Chrome/linkedin_40/linkedin_40_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/linkedin_40/linkedin_40_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.linkedin.com" class="url" target="_blank" rel="noopener noreferrer">https://www.linkedin.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page.<br>3. The firefox rendering (firefox_image) is a sign-up page, while the chrome rendering (chrome_image) is the main landing page.<br>4. significant-visual because the renderings are of different pages.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/serviziweb2_134/serviziweb2_134_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/serviziweb2_134/serviziweb2_134_overlay.png" />
+                  <img src="./web_screenshots/Chrome/serviziweb2_134/serviziweb2_134_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/serviziweb2_134/serviziweb2_134_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://serviziweb2.inps.it" class="url" target="_blank" rel="noopener noreferrer">https://serviziweb2.inps.it
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main page content.<br>3. The firefox rendering (firefox_image) is the homepage of the INPS website, while the chrome rendering (chrome_image) is a 'Page not available' message.<br>4. significant-visual because the firefox site is the main site and it does not load in chrome.<br>5. P1 - Immediate</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/terra_233/terra_233_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/terra_233/terra_233_overlay.png" />
+                  <img src="./web_screenshots/Chrome/terra_233/terra_233_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/terra_233/terra_233_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://terra.toogo.in" class="url" target="_blank" rel="noopener noreferrer">https://terra.toogo.in
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page.<br>3. The firefox rendering (firefox_image) is the full login page with the background image and the login box. The chrome rendering (chrome_image) is just a light-colored background.<br>4. significant-visual because the firefox site is unusable as it does not load the login box.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/bbvanetcash_338/bbvanetcash_338_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/bbvanetcash_338/bbvanetcash_338_overlay.png" />
+                  <img src="./web_screenshots/Chrome/bbvanetcash_338/bbvanetcash_338_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/bbvanetcash_338/bbvanetcash_338_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://bbvanetcash.mx" class="url" target="_blank" rel="noopener noreferrer">https://bbvanetcash.mx
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) is the login page for BBVA Net Cash, while the chrome rendering (chrome_image) is an error message.<br>4. significant-visual because the firefox site is not useable as it is not the error message.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/medsab_402/medsab_402_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/medsab_402/medsab_402_overlay.png" />
+                  <img src="./web_screenshots/Chrome/medsab_402/medsab_402_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/medsab_402/medsab_402_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.medsab.ac.ir" class="url" target="_blank" rel="noopener noreferrer">https://www.medsab.ac.ir
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main page content.<br>3. The firefox rendering (firefox_image) shows a building facade, while the chrome rendering (chrome_image) shows an interior space.<br>4. significant-visual because the renderings display different locations.<br>5. High (P2) because the renderings do not match.</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/badoo_530/badoo_530_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/badoo_530/badoo_530_overlay.png" />
+                  <img src="./web_screenshots/Chrome/badoo_530/badoo_530_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/badoo_530/badoo_530_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://badoo.com" class="url" target="_blank" rel="noopener noreferrer">https://badoo.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page.<br>3. The firefox site (firefox_image) is the full desktop version of the dating app where as the chrome site (chrome_image) is a mobile version.<br>4. significant-visual because the renderings are of different versions of the dating app.<br>5. High (P2) because the firefox and chrome renderings are of different versions of the dating app.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/funda_543/funda_543_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/funda_543/funda_543_overlay.png" />
+                  <img src="./web_screenshots/Chrome/funda_543/funda_543_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/funda_543/funda_543_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.funda.nl" class="url" target="_blank" rel="noopener noreferrer">https://www.funda.nl
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main page content.<br>3. The firefox rendering (firefox_image) is of the main site page, while the chrome rendering (chrome_image) is a message that states 'Je bent bijna op de pagina die je zoekt' which translates to 'You are almost on the page you are looking for'.<br>4. significant-visual because the main site content is missing in the chrome rendering (chrome_image).<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/servizi2_678/servizi2_678_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/servizi2_678/servizi2_678_overlay.png" />
+                  <img src="./web_screenshots/Chrome/servizi2_678/servizi2_678_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/servizi2_678/servizi2_678_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://servizi2.inps.it" class="url" target="_blank" rel="noopener noreferrer">https://servizi2.inps.it
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main page content.<br>3. The firefox rendering (firefox_image) is the main site page with content, while the chrome rendering (chrome_image) is a message that states 'Pagina non disponibile' which translates to 'Page not available'.<br>4. significant-visual because the main site content is missing in the firefox rendering (firefox_image).<br>5. P1 - Immediate</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/ordreference_704/ordreference_704_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/ordreference_704/ordreference_704_overlay.png" />
+                  <img src="./web_screenshots/Chrome/ordreference_704/ordreference_704_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/ordreference_704/ordreference_704_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.wordreference.com" class="url" target="_blank" rel="noopener noreferrer">https://www.wordreference.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The bottom information section.<br>3. The chrome rendering (top) has the text of the 'Spanish Dictionaries', 'French and Italian Dictionaries', and 'Language Forums' sections all under one another, while in the firefox rendering (bottom) these sections are side by side.<br>4. significant-visual because the renderings layouts are different.<br>5. High (P2) because the renderings layouts are different.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/freenet_741/freenet_741_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/freenet_741/freenet_741_overlay.png" />
+                  <img src="./web_screenshots/Chrome/freenet_741/freenet_741_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/freenet_741/freenet_741_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.freenet.de" class="url" target="_blank" rel="noopener noreferrer">https://www.freenet.de
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main page content.<br>3. The firefox rendering (firefox_image) is many of the top and middle sections of the main page content.<br>4. significant-visual because a large portion of the main site content is missing in the firefox rendering.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/eboleta_811/eboleta_811_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/eboleta_811/eboleta_811_overlay.png" />
+                  <img src="./web_screenshots/Chrome/eboleta_811/eboleta_811_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/eboleta_811/eboleta_811_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://eboleta.sii.cl" class="url" target="_blank" rel="noopener noreferrer">https://eboleta.sii.cl
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows the login screen for the Servicio de Impuestos Internos website, while the chrome rendering (chrome_image) shows an error message that states 'NO SE ENCONTRÓ LA PÁGINA' (Page not found).<br>4. significant-visual because the firefox site is not loaded in chrome (chrome_image).<br>5. P1 - Immediate because the main site is not loaded.</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/login_815/login_815_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/login_815/login_815_overlay.png" />
+                  <img src="./web_screenshots/Chrome/login_815/login_815_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/login_815/login_815_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://login.yahoo.com" class="url" target="_blank" rel="noopener noreferrer">https://login.yahoo.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main content of the page.<br>3. The firefox rendering (firefox_image) is missing the left and bottom sections of the website that contain the stock information and the graph.<br>4. significant-visual because the firefox rendering is missing a large portion of the website content.<br>5. High (P2) because a significant amount of content is missing in the firefox rendering.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/vitaltrack_827/vitaltrack_827_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/vitaltrack_827/vitaltrack_827_overlay.png" />
+                  <img src="./web_screenshots/Chrome/vitaltrack_827/vitaltrack_827_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/vitaltrack_827/vitaltrack_827_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://vitaltrack.org" class="url" target="_blank" rel="noopener noreferrer">https://vitaltrack.org
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The graph.<br>3. The firefox rendering (firefox_image) is missing the visual representation graph.<br>4. significant-visual because of the missing graph in the firefox rendering.<br>5. High (P2) because of the missing data.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/portalweb2_866/portalweb2_866_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/portalweb2_866/portalweb2_866_overlay.png" />
+                  <img src="./web_screenshots/Chrome/portalweb2_866/portalweb2_866_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/portalweb2_866/portalweb2_866_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://portalweb2.ibge.gov.br" class="url" target="_blank" rel="noopener noreferrer">https://portalweb2.ibge.gov.br
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The header.<br>3. The firefox rendering (firefox_image) is missing the 'Organization header logo' text.<br>4. significant-visual because of the missing text.<br>5. High (P2)</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/bb_934/bb_934_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/bb_934/bb_934_overlay.png" />
+                  <img src="./web_screenshots/Chrome/bb_934/bb_934_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/bb_934/bb_934_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.bb.com.br" class="url" target="_blank" rel="noopener noreferrer">https://www.bb.com.br
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main page content.<br>3. The firefox rendering (firefox_image) is missing the main page content, instead there are several gray bars.<br>4. significant-visual because the main page content is missing in the firefox rendering.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/gemini_983/gemini_983_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/gemini_983/gemini_983_overlay.png" />
+                  <img src="./web_screenshots/Chrome/gemini_983/gemini_983_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/gemini_983/gemini_983_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://gemini.google.com" class="url" target="_blank" rel="noopener noreferrer">https://gemini.google.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The search bar.<br>3. The buttons 'Write', 'Build', 'Research', and 'Create Image' are missing from the firefox rendering (firefox_image).<br>4. significant-visual because the buttons are missing in the firefox rendering (firefox_image).<br>5. High (P2) because the buttons are missing.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/target_205/target_205_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/target_205/target_205_overlay.png" />
+                  <img src="./web_screenshots/Chrome/target_205/target_205_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/target_205/target_205_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.target.com/cart  " class="url" target="_blank" rel="noopener noreferrer">https://www.target.com/cart  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main page content.<br>3. The cart is empty in the chrome rendering (chrome_image), but the firefox rendering (firefox_image) shows that the cart is empty.<br>4. significant-visual because the renderings do not agree on the cart's contents.<br>5. High (P2) because the cart is a core function of the website.</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/virtualbox_208/virtualbox_208_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/virtualbox_208/virtualbox_208_overlay.png" />
+                  <img src="./web_screenshots/Chrome/virtualbox_208/virtualbox_208_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/virtualbox_208/virtualbox_208_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.virtualbox.org/wiki/Downloads  " class="url" target="_blank" rel="noopener noreferrer">https://www.virtualbox.org/wiki/Downloads  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main content of the page.<br>3. The firefox rendering (firefox_image) is showing a jumbled mess of symbols instead of the website content.<br>4. significant-visual because the firefox site is unusable.<br>5. P1 - Immediate</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/peacocktv_267/peacocktv_267_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/peacocktv_267/peacocktv_267_overlay.png" />
+                  <img src="./web_screenshots/Chrome/peacocktv_267/peacocktv_267_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/peacocktv_267/peacocktv_267_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.peacocktv.com/watch/home" class="url" target="_blank" rel="noopener noreferrer">https://www.peacocktv.com/watch/home
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2.Background image<br>3.The Chrome rendering (left) shows a close-up of a person, while the Firefox rendering (right) shows a wide shot of a theme park.<br>4.significant-visual because the renderings display completely different content.<br>5.High</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/linkedin_613/linkedin_613_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/linkedin_613/linkedin_613_overlay.png" />
+                  <img src="./web_screenshots/Chrome/linkedin_613/linkedin_613_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/linkedin_613/linkedin_613_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.linkedin.com/in/  " class="url" target="_blank" rel="noopener noreferrer">https://www.linkedin.com/in/  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) is a sign-up page for LinkedIn, while the chrome rendering (chrome_image) is an error message that states 'Page not found'.<br>4. significant-visual because the renderings show completely different pages.<br>5. P1 - Immediate because the renderings do not match.</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/x_623/x_623_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/x_623/x_623_overlay.png" />
+                  <img src="./web_screenshots/Chrome/x_623/x_623_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/x_623/x_623_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://x.com/" class="url" target="_blank" rel="noopener noreferrer">https://x.com/
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page.<br>3. The firefox page (firefox_image) is a different layout. It has the 'Happening now' text at the top and the X logo on the left.<br>4. significant-visual because the renderings layouts are different.<br>5. High (P2) because the layouts are different.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/neues_orchester_kronberg_56/neues_orchester_kronberg_56_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/neues_orchester_kronberg_56/neues_orchester_kronberg_56_overlay.png" />
+                  <img src="./web_screenshots/Chrome/neues_orchester_kronberg_56/neues_orchester_kronberg_56_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/neues_orchester_kronberg_56/neues_orchester_kronberg_56_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="http://www.neues-orchester-kronberg.de/page.php" class="url" target="_blank" rel="noopener noreferrer">http://www.neues-orchester-kronberg.de/page.php
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows a full website with a menu and content, while the chrome rendering (chrome_image) only shows the logo and a message.<br>4. significant-visual because the firefox site is a full website, but the chrome site is not.<br>5. P1 - Immediate because the renderings are vastly different.</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/epa_146/epa_146_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/epa_146/epa_146_overlay.png" />
+                  <img src="./web_screenshots/Chrome/epa_146/epa_146_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/epa_146/epa_146_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.epa.gov/sunsafety/uv-index-applications  " class="url" target="_blank" rel="noopener noreferrer">https://www.epa.gov/sunsafety/uv-index-applications  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2.The second map image.<br>3.The firefox rendering (firefox_image) is missing the second map image that shows the UV Index Forecast for US Cities.<br>4.significant-visual because of the missing map in the firefox rendering.<br>5.High (P2) because of the missing information.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/msn_183/msn_183_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/msn_183/msn_183_overlay.png" />
+                  <img src="./web_screenshots/Chrome/msn_183/msn_183_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/msn_183/msn_183_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.msn.com/en-in/money/topstories/wealth-of-5-richest-men-doubled-since-2020-five-billion-people-made-poorer-oxfam-davos/ar-AA1mZrke" class="url" target="_blank" rel="noopener noreferrer">https://www.msn.com/en-in/money/topstories/wealth-of-5-richest-men-doubled-since-2020-five-billion-people-made-poorer-oxfam-davos/ar-AA1mZrke
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main content of the page <br>3. The firefox rendering (firefox_image) is many of the articles.<br>4. significant-visual because many of the articles are missing in the firefox rendering.<br>5. High (P2) because many of the articles are missing.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/ldlght_213/ldlght_213_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/ldlght_213/ldlght_213_overlay.png" />
+                  <img src="./web_screenshots/Chrome/ldlght_213/ldlght_213_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/ldlght_213/ldlght_213_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://wldlght.com/  " class="url" target="_blank" rel="noopener noreferrer">https://wldlght.com/  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The button to start the projection.<br>3. The button to start the projection is missing in the firefox rendering (firefox_image).<br>4. significant-visual because the button is missing, which is core functionality.<br>5. High (P2) because the button is missing.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/github_440/github_440_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/github_440/github_440_overlay.png" />
+                  <img src="./web_screenshots/Chrome/github_440/github_440_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/github_440/github_440_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://github.com/aliftype/quran-data/blob/main/quran/001.txt  " class="url" target="_blank" rel="noopener noreferrer">https://github.com/aliftype/quran-data/blob/main/quran/001.txt  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The text in the code section.<br>3. The firefox rendering (firefox_image) shows the arabic text as symbols.<br>4. significant-visual because the firefox rendering is unreadable.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/samg381_602/samg381_602_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/samg381_602/samg381_602_overlay.png" />
+                  <img src="./web_screenshots/Chrome/samg381_602/samg381_602_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/samg381_602/samg381_602_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="http://samg381.com/projects/drone/img/Phase4/A.mp4    " class="url" target="_blank" rel="noopener noreferrer">http://samg381.com/projects/drone/img/Phase4/A.mp4    
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2.The video player<br>3.The firefox rendering (firefox_image) shows that the video failed to load.<br>4.significant-visual because the video is content that did not load.<br>5.High (P2) because the video is content that did not load.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/randomshit_611/randomshit_611_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/randomshit_611/randomshit_611_overlay.png" />
+                  <img src="./web_screenshots/Chrome/randomshit_611/randomshit_611_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/randomshit_611/randomshit_611_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="http://randomshit.joshwalsh.me/firefoxImageIssue.html  " class="url" target="_blank" rel="noopener noreferrer">http://randomshit.joshwalsh.me/firefoxImageIssue.html  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The header.<br>3. The firefox rendering (firefox_image) is shorter in height.<br>4. significant-visual because the header is not the full width of the page in the firefox rendering.<br>5. P2</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/tdameritrade_67/tdameritrade_67_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/tdameritrade_67/tdameritrade_67_overlay.png" />
+                  <img src="./web_screenshots/Chrome/tdameritrade_67/tdameritrade_67_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/tdameritrade_67/tdameritrade_67_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.tdameritrade.com  " class="url" target="_blank" rel="noopener noreferrer">https://www.tdameritrade.com  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows the full website with all elements, while the chrome rendering (chrome_image) only shows a message that states 'We're sorry, but we were unable to authorize your request. Please call us at 800-433-9196 and provide reference number SWAF-18.90951e68.1753745668.4803fc81. We apologize for any inconvenience.'<br>4. significant-visual because the firefox site is unusable as it does not load the main page content.<br>5. P1 - Immediate because the website does not load in firefox, hindering usability.</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/sanskrit_linguistics_80/sanskrit_linguistics_80_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/sanskrit_linguistics_80/sanskrit_linguistics_80_overlay.png" />
+                  <img src="./web_screenshots/Chrome/sanskrit_linguistics_80/sanskrit_linguistics_80_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/sanskrit_linguistics_80/sanskrit_linguistics_80_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="http://sanskrit-linguistics.org/dcs/index.php" class="url" target="_blank" rel="noopener noreferrer">http://sanskrit-linguistics.org/dcs/index.php
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows the main site content, while the chrome rendering (chrome_image) shows a login page.<br>4. significant-visual because the firefox site is inaccessible due to the login page.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/anaf_248/anaf_248_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/anaf_248/anaf_248_overlay.png" />
+                  <img src="./web_screenshots/Chrome/anaf_248/anaf_248_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/anaf_248/anaf_248_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.anaf.ro/anaf/internet/ANAF/servicii_online/programari_online/" class="url" target="_blank" rel="noopener noreferrer">https://www.anaf.ro/anaf/internet/ANAF/servicii_online/programari_online/
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main content of the page.<br>3. The firefox rendering (firefox_image) is missing the bottom section with the carousel and the top of the main content section.<br>4. significant-visual because a large portion of the content is missing in the firefox rendering.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/tdameritrade_265/tdameritrade_265_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/tdameritrade_265/tdameritrade_265_overlay.png" />
+                  <img src="./web_screenshots/Chrome/tdameritrade_265/tdameritrade_265_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/tdameritrade_265/tdameritrade_265_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.tdameritrade.com/home.page    " class="url" target="_blank" rel="noopener noreferrer">https://www.tdameritrade.com/home.page    
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) is the full website. The chrome rendering (chrome_image) is a message that states 'We're sorry, but we were unable to authorize your request. Please call us at 800-433-9196 and provide reference number SWAF-18.90951e68.1753748504.483ff0da. We apologize for any inconvenience.'<br>4. significant-visual because the full website does not load in chrome (chrome_image)<br>5. P1 - Immediate</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+          </div>
+    
+          <div class="pagination"></div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="section">
+      <h2>
+        Minor Visual Sites
+        <button class="toggle-button" data-target="table-3">Show Table</button>
+      </h2>
+      <h4> Total results: 1 </h4>
+      <div class="count" id="count-3">Showing 0 results</div>
+      <div id="table-3" class="table-content" style="display: none;">
+        <div id="list-3" class="list-wrapper">
+          <input class="search" placeholder="Search Minor Visual Sites..." />
+
+          <label>
+            Rows per page:
+            <select class="rows-per-page" data-list-id="list-3">
+              <option>5</option>
+              <option>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option value="1000">All</option>
+            </select>
+          </label>
+
+          <label>
+            Priority:
+            <select class="filter-priority" data-list-id="list-3">
+              <option value="">All</option>
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+              <option value="P4">P4</option>
+            </select>
+          </label>
+
+          <label>
+           <input type="checkbox" class="toggle-p5" data-list-id="list-3">
+            Show 'Not fixable'
+        </label>
+    
+          <div class="list">
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/moodle_app2_101/moodle_app2_101_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/moodle_app2_101/moodle_app2_101_overlay.png" />
+                  <img src="./web_screenshots/Chrome/moodle_app2_101/moodle_app2_101_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/moodle_app2_101/moodle_app2_101_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://moodle-app2.let.ethz.ch" class="url" target="_blank" rel="noopener noreferrer">https://moodle-app2.let.ethz.ch
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2.Background image<br>3.The Chrome rendering (chrome_image) displays a blurred image of people working at a table, while the Firefox rendering (firefox_image) shows a clear image of people walking outside a building.<br>4.minor-visual because the background image is different, but this does not limit usability of the site.<br>5.P4</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/cs50_895/cs50_895_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/cs50_895/cs50_895_overlay.png" />
+                  <img src="./web_screenshots/Chrome/cs50_895/cs50_895_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/cs50_895/cs50_895_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://cs50.dev" class="url" target="_blank" rel="noopener noreferrer">https://cs50.dev
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The code snippet image.<br>3. The syntax highlighting in the code snippet image is different. The firefox rendering (firefox_image) has more colorful syntax highlighting.<br>4. minor-visual because the firefox rendering is more visually appealing due to the increased syntax highlighting.<br>5. P4</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+          </div>
+    
+          <div class="pagination"></div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="section">
+      <h2>
+        Pop-Up Entries
+        <button class="toggle-button" data-target="table-4">Show Table</button>
+      </h2>
+      <h4> Total results: 16 </h4>
+      <div class="count" id="count-4">Showing 0 results</div>
+      <div id="table-4" class="table-content" style="display: none;">
+        <div id="list-4" class="list-wrapper">
+          <input class="search" placeholder="Search Pop-Up Entries..." />
+
+          <label>
+            Rows per page:
+            <select class="rows-per-page" data-list-id="list-4">
+              <option>5</option>
+              <option>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option value="1000">All</option>
+            </select>
+          </label>
+
+          <label>
+            Priority:
+            <select class="filter-priority" data-list-id="list-4">
+              <option value="">All</option>
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+              <option value="P4">P4</option>
+            </select>
+          </label>
+
+          <label>
+           <input type="checkbox" class="toggle-p5" data-list-id="list-4">
+            Show 'Not fixable'
+        </label>
+    
+          <div class="list">
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/skill4ltu_3/skill4ltu_3_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/skill4ltu_3/skill4ltu_3_overlay.png" />
+                  <img src="./web_screenshots/Chrome/skill4ltu_3/skill4ltu_3_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/skill4ltu_3/skill4ltu_3_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://skill4ltu.eu" class="url" target="_blank" rel="noopener noreferrer">https://skill4ltu.eu
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing from the chrome rendering (chrome_image).<br>4. Medium because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/onet_46/onet_46_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/onet_46/onet_46_overlay.png" />
+                  <img src="./web_screenshots/Chrome/onet_46/onet_46_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/onet_46/onet_46_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.onet.pl" class="url" target="_blank" rel="noopener noreferrer">https://www.onet.pl
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing in the Chrome rendering (firefox_image).<br>4. Medium because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/sapiens_69/sapiens_69_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/sapiens_69/sapiens_69_overlay.png" />
+                  <img src="./web_screenshots/Chrome/sapiens_69/sapiens_69_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/sapiens_69/sapiens_69_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://sapiens.agu.gov.br" class="url" target="_blank" rel="noopener noreferrer">https://sapiens.agu.gov.br
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The pop-up is missing in the Firefox rendering (firefox_image).<br>4. significant-visual because the pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/support_161/support_161_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/support_161/support_161_overlay.png" />
+                  <img src="./web_screenshots/Chrome/support_161/support_161_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/support_161/support_161_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://support.mozilla.org" class="url" target="_blank" rel="noopener noreferrer">https://support.mozilla.org
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing from the Firefox rendering (firefox_image).<br>4. significant-visual because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/eb_185/eb_185_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/eb_185/eb_185_overlay.png" />
+                  <img src="./web_screenshots/Chrome/eb_185/eb_185_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/eb_185/eb_185_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://web.de" class="url" target="_blank" rel="noopener noreferrer">https://web.de
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing in the Chrome rendering (chrome_image).<br>4. significant-visual because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/gmx_287/gmx_287_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/gmx_287/gmx_287_overlay.png" />
+                  <img src="./web_screenshots/Chrome/gmx_287/gmx_287_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/gmx_287/gmx_287_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.gmx.net" class="url" target="_blank" rel="noopener noreferrer">https://www.gmx.net
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing in the Chrome rendering (chrome_image).<br>4. Medium because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/navigator_340/navigator_340_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/navigator_340/navigator_340_overlay.png" />
+                  <img src="./web_screenshots/Chrome/navigator_340/navigator_340_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/navigator_340/navigator_340_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://navigator.gmx.net" class="url" target="_blank" rel="noopener noreferrer">https://navigator.gmx.net
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing in the chrome rendering (firefox_image).<br>4. significant-visual because the cookie consent pop-up is missing.<br>5. High (P2) because the cookie consent pop-up is missing.</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/drive_510/drive_510_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/drive_510/drive_510_overlay.png" />
+                  <img src="./web_screenshots/Chrome/drive_510/drive_510_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/drive_510/drive_510_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://drive.google.com" class="url" target="_blank" rel="noopener noreferrer">https://drive.google.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows the google drive website, while the chrome rendering (chrome_image) shows the sign in page.<br>4. significant-visual because the firefox site is the main site and the sign in page is a pop-up.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/school_597/school_597_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/school_597/school_597_overlay.png" />
+                  <img src="./web_screenshots/Chrome/school_597/school_597_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/school_597/school_597_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://school.apple.com" class="url" target="_blank" rel="noopener noreferrer">https://school.apple.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page.<br>3. The firefox rendering (firefox_image) shows a pop-up with the message 'There's an error'.<br>4. blocked-unsupported because the message indicates that the firefox browser is not supported.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/fanatical_725/fanatical_725_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/fanatical_725/fanatical_725_overlay.png" />
+                  <img src="./web_screenshots/Chrome/fanatical_725/fanatical_725_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/fanatical_725/fanatical_725_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.fanatical.com" class="url" target="_blank" rel="noopener noreferrer">https://www.fanatical.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing from the firefox rendering (firefox_image).<br>4. significant-visual because the cookie consent pop-up is missing in the firefox rendering (firefox_image).<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/mexc_733/mexc_733_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/mexc_733/mexc_733_overlay.png" />
+                  <img src="./web_screenshots/Chrome/mexc_733/mexc_733_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/mexc_733/mexc_733_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.mexc.com" class="url" target="_blank" rel="noopener noreferrer">https://www.mexc.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The 'Claim your 20 USDT Now' pop-up is missing in the Chrome rendering (chrome_image).<br>4. Medium because the pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/ziggogo_788/ziggogo_788_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/ziggogo_788/ziggogo_788_overlay.png" />
+                  <img src="./web_screenshots/Chrome/ziggogo_788/ziggogo_788_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/ziggogo_788/ziggogo_788_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.ziggogo.tv" class="url" target="_blank" rel="noopener noreferrer">https://www.ziggogo.tv
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing in the Chrome rendering (chrome_image).<br>4. significant-visual because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/business_847/business_847_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/business_847/business_847_overlay.png" />
+                  <img src="./web_screenshots/Chrome/business_847/business_847_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/business_847/business_847_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://business.apple.com" class="url" target="_blank" rel="noopener noreferrer">https://business.apple.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page content.<br>3. The firefox rendering (firefox_image) shows a pop-up with the message 'There's an error'.<br>4. blocked-unsupported because the firefox site is unsupported.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/gmx_848/gmx_848_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/gmx_848/gmx_848_overlay.png" />
+                  <img src="./web_screenshots/Chrome/gmx_848/gmx_848_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/gmx_848/gmx_848_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.gmx.com" class="url" target="_blank" rel="noopener noreferrer">https://www.gmx.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing in the Chrome rendering (chrome_image).<br>4. Medium because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/portal_851/portal_851_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/portal_851/portal_851_overlay.png" />
+                  <img src="./web_screenshots/Chrome/portal_851/portal_851_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/portal_851/portal_851_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://portal.redf.gov.sa" class="url" target="_blank" rel="noopener noreferrer">https://portal.redf.gov.sa
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The main pop-up is missing in the Firefox rendering (firefox_image).<br>4. significant-visual because the main pop-up is missing.<br>5. High (P2) because the main pop-up is missing.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/copilot_883/copilot_883_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/copilot_883/copilot_883_overlay.png" />
+                  <img src="./web_screenshots/Chrome/copilot_883/copilot_883_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/copilot_883/copilot_883_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://copilot.microsoft.com" class="url" target="_blank" rel="noopener noreferrer">https://copilot.microsoft.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing in the chrome rendering (firefox_image).<br>4. significant-visual because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/citi_891/citi_891_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/citi_891/citi_891_overlay.png" />
+                  <img src="./web_screenshots/Chrome/citi_891/citi_891_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/citi_891/citi_891_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.citi.com" class="url" target="_blank" rel="noopener noreferrer">https://www.citi.com
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing from the firefox rendering (firefox_image).<br>4. significant-visual because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/mail01_952/mail01_952_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/mail01_952/mail01_952_overlay.png" />
+                  <img src="./web_screenshots/Chrome/mail01_952/mail01_952_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/mail01_952/mail01_952_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://mail01.orange.fr" class="url" target="_blank" rel="noopener noreferrer">https://mail01.orange.fr
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The Captcha and a pop-up.<br>3. The Firefox rendering (firefox_image) is missing some of the images in the Captcha and the pop-up is also missing.<br>4. significant-visual because the Captcha is incomplete in the Firefox rendering (firefox_image).<br>5. High (P2) because the Captcha is not fully rendered in the Firefox rendering (firefox_image).</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/bizjournals_202/bizjournals_202_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/bizjournals_202/bizjournals_202_overlay.png" />
+                  <img src="./web_screenshots/Chrome/bizjournals_202/bizjournals_202_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/bizjournals_202/bizjournals_202_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.bizjournals.com/sanfrancisco/news/2025/07/02/harvest-properties-bay-center-emeryville.html" class="url" target="_blank" rel="noopener noreferrer">https://www.bizjournals.com/sanfrancisco/news/2025/07/02/harvest-properties-bay-center-emeryville.html
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The entire page.<br>3. The firefox rendering (firefox_image) is showing a pop-up for a subscription.<br>4. significant-visual because the pop-up is missing in the chrome rendering (chrome_image).<br>5. P3 because the pop-up is missing.</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/superuser_265/superuser_265_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/superuser_265/superuser_265_overlay.png" />
+                  <img src="./web_screenshots/Chrome/superuser_265/superuser_265_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/superuser_265/superuser_265_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://superuser.com/questions/1858009/what-is-the-difference-between-these-nerd-font-types-mono-propo-script  " class="url" target="_blank" rel="noopener noreferrer">https://superuser.com/questions/1858009/what-is-the-difference-between-these-nerd-font-types-mono-propo-script  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing from the Firefox rendering (firefox_image).<br>4. significant-visual because the cookie consent pop-up is missing in the Firefox rendering (firefox_image).<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/threejs_71/threejs_71_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/threejs_71/threejs_71_overlay.png" />
+                  <img src="./web_screenshots/Chrome/threejs_71/threejs_71_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/threejs_71/threejs_71_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://threejs.org/playground/  " class="url" target="_blank" rel="noopener noreferrer">https://threejs.org/playground/  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The main page content.<br>3. The firefox rendering (firefox_image) shows the full site with the 3D model and the settings pop-up, while the chrome rendering (chrome_image) shows a blank page with the settings pop-up.<br>4. significant-visual because the main site content is missing in the firefox rendering.<br>5. P1</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/opal_128/opal_128_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/opal_128/opal_128_overlay.png" />
+                  <img src="./web_screenshots/Chrome/opal_128/opal_128_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/opal_128/opal_128_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://opal.latrobe.edu.au/  " class="url" target="_blank" rel="noopener noreferrer">https://opal.latrobe.edu.au/  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing from the firefox rendering (firefox_image).<br>4. significant-visual because the cookie consent pop-up is missing in the firefox rendering (firefox_image).<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/flightradar24_279/flightradar24_279_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/flightradar24_279/flightradar24_279_overlay.png" />
+                  <img src="./web_screenshots/Chrome/flightradar24_279/flightradar24_279_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/flightradar24_279/flightradar24_279_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="http://flightradar24.com  " class="url" target="_blank" rel="noopener noreferrer">http://flightradar24.com  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing in the Chrome rendering (chrome_image).<br>4. Medium because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/offidocs_301/offidocs_301_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/offidocs_301/offidocs_301_overlay.png" />
+                  <img src="./web_screenshots/Chrome/offidocs_301/offidocs_301_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/offidocs_301/offidocs_301_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.offidocs.com/index.php/main-quick-links/1036958-chromium-online-web-browser  " class="url" target="_blank" rel="noopener noreferrer">https://www.offidocs.com/index.php/main-quick-links/1036958-chromium-online-web-browser  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing from the firefox rendering (firefox_image).<br>4. significant-visual because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/naveenmk_461/naveenmk_461_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/naveenmk_461/naveenmk_461_overlay.png" />
+                  <img src="./web_screenshots/Chrome/naveenmk_461/naveenmk_461_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/naveenmk_461/naveenmk_461_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.naveenmk.me/tags/number/  " class="url" target="_blank" rel="noopener noreferrer">https://www.naveenmk.me/tags/number/  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The 'Online Courses' pop-up is missing in the Chrome rendering (chrome_image).<br>4. Medium because the 'Online Courses' pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/bbcstudioworks_477/bbcstudioworks_477_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/bbcstudioworks_477/bbcstudioworks_477_overlay.png" />
+                  <img src="./web_screenshots/Chrome/bbcstudioworks_477/bbcstudioworks_477_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/bbcstudioworks_477/bbcstudioworks_477_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://bbcstudioworks.com/  " class="url" target="_blank" rel="noopener noreferrer">https://bbcstudioworks.com/  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing from the Firefox rendering (firefox_image).<br>4. significant-visual because the cookie consent pop-up is missing in the Firefox rendering (firefox_image).<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/express_513/express_513_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/express_513/express_513_overlay.png" />
+                  <img src="./web_screenshots/Chrome/express_513/express_513_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/express_513/express_513_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://express.adobe.com/page/zl5NKWHj0NGc9/  " class="url" target="_blank" rel="noopener noreferrer">https://express.adobe.com/page/zl5NKWHj0NGc9/  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The pop-up in the Firefox rendering (firefox_image) is overlapping with the footer.<br>4. significant-visual because the pop-up is overlapping with the footer.<br>5. High (P2) because the pop-up is overlapping with the footer.</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/411_23/411_23_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/411_23/411_23_overlay.png" />
+                  <img src="./web_screenshots/Chrome/411_23/411_23_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/411_23/411_23_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://411.ca/  " class="url" target="_blank" rel="noopener noreferrer">https://411.ca/  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up and a message.<br>3. The feedback pop-up is missing in the chrome rendering (chrome_image). There is also a message in the firefox rendering (firefox_image) that states 'Your web browser is out of date'.<br>4. significant-visual because the feedback pop-up is missing and there is a message indicating an outdated browser in firefox (firefox_image).<br>5. P2</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/cvs_58/cvs_58_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/cvs_58/cvs_58_overlay.png" />
+                  <img src="./web_screenshots/Chrome/cvs_58/cvs_58_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/cvs_58/cvs_58_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.cvs.com/pharmacy/v2/" class="url" target="_blank" rel="noopener noreferrer">https://www.cvs.com/pharmacy/v2/
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The feedback pop-up is missing in the Firefox rendering (firefox_image).<br>4. Medium because the feedback pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/gmbinder_82/gmbinder_82_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/gmbinder_82/gmbinder_82_overlay.png" />
+                  <img src="./web_screenshots/Chrome/gmbinder_82/gmbinder_82_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/gmbinder_82/gmbinder_82_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://www.gmbinder.com/  " class="url" target="_blank" rel="noopener noreferrer">https://www.gmbinder.com/  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The cookie consent pop-up is missing in the firefox rendering (firefox_image).<br>4. significant-visual because the cookie consent pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/lol_86/lol_86_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/lol_86/lol_86_overlay.png" />
+                  <img src="./web_screenshots/Chrome/lol_86/lol_86_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/lol_86/lol_86_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://lol.qq.com/act/a20220822augustsummon2/index.html" class="url" target="_blank" rel="noopener noreferrer">https://lol.qq.com/act/a20220822augustsummon2/index.html
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. A pop-up.<br>3. The pop-up is missing in the Firefox rendering (firefox_image).<br>4. significant-visual because the pop-up is missing.<br>5. P3</div>
+                </div>
+                <span class="priority" style="display: none;">None</span>
+              </div>
+            
+              <div class="entry">
+                <div class="images-labels">
+                  <div>Firefox Image</div>
+                  <div>Chrome Image</div>
+                </div>
+                 
+                    <div class="cropped-note">⚠️ One of the images was cropped for analysis</div>
+                  
+                <div class="images">
+                  <img src="./web_screenshots/Firefox/news_94/news_94_overlay.png" alt="Firefox Image" class="lightbox-thumb" data-full="./web_screenshots/Firefox/news_94/news_94_overlay.png" />
+                  <img src="./web_screenshots/Chrome/news_94/news_94_overlay.png" alt="Chrome Image" class="lightbox-thumb" data-full="./web_screenshots/Chrome/news_94/news_94_overlay.png" />
+                </div>
+                <div class="desc-col-full">
+                  <strong>URL:</strong>
+                  <a href="https://news.tvb.com/tc/live/83  " class="url" target="_blank" rel="noopener noreferrer">https://news.tvb.com/tc/live/83  
+                  </a>
+                </div>
+                <div class="desc-col-full">
+                  <strong>Firefox Version:</strong>
+                  <div class="firefox_version"></div>
+                </div>
+                <div class="desc-col-full">
+                  <span class="tooltip">
+                    <strong>Model Output</strong>
+                    <span class="tooltiptext">1. Is there a difference? <br> 2. What elements are affected? <br> 3. How do the renderings differ? <br> 4. What is the impact? <br> 5. Can a Firefox browser developer fix this? What is the severity? </span>
+                  </span>
+                  <div class="model_output_3">1. Yes.<br>2. The video player and a pop-up.<br>3. The video player in the Firefox rendering (firefox_image) does not load, instead there is the message 'You are offline'. There is also a different pop-up in both renderings.<br>4. significant-visual because the video does not load in Firefox (firefox_image) which is content for the website that does not render and the pop-ups are different.<br>5. High (P2) because the video does not load which is content for the website.</div>
+                </div>
+                <span class="priority" style="display: none;">P5</span>
+              </div>
+            
+          </div>
+    
+          <div class="pagination"></div>
+        </div>
+      </div>
+    </div>
+  
+  
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Toggle buttons
+      document.querySelectorAll('.toggle-button').forEach(button => {
+        const targetId = button.dataset.target;
+        const target = document.getElementById(targetId);
+        button.addEventListener('click', () => {
+          const isHidden = target.style.display === 'none';
+          target.style.display = isHidden ? 'block' : 'none';
+          button.textContent = isHidden ? 'Hide Table' : 'Show Table';
+        });
+      });
+      // Lightbox functionality
+      let currentImages = [];
+      let currentIndex = 0;
+
+      document.querySelectorAll('.lightbox-thumb').forEach(img => {
+        img.addEventListener('click', () => {
+          const entry = img.closest('.entry');
+          currentImages = Array.from(entry.querySelectorAll('.lightbox-thumb'));
+          currentIndex = currentImages.indexOf(img);
+
+          const modal = document.getElementById('lightboxModal');
+          const modalImg = document.getElementById('lightboxImage');
+          modal.style.display = 'block';
+          modalImg.src = img.dataset.full;
+        });
+      });
+
+      function showImageAt(index) {
+        if (index >= 0 && index < currentImages.length) {
+          currentIndex = index;
+          document.getElementById('lightboxImage').src = currentImages[currentIndex].dataset.full;
+        }
+      }
+
+      document.getElementById('lightbox-prev').addEventListener('click', () => {
+        showImageAt(currentIndex - 1);
+      });
+      document.getElementById('lightbox-next').addEventListener('click', () => {
+        showImageAt(currentIndex + 1);
+      });
+
+      document.querySelector('.lightbox-close').addEventListener('click', () => {
+        document.getElementById('lightboxModal').style.display = 'none';
+      });
+
+      window.addEventListener('click', (event) => {
+        const modal = document.getElementById('lightboxModal');
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+
+      window.addEventListener('keydown', (event) => {
+        const modal = document.getElementById('lightboxModal');
+        if (modal.style.display === 'block') {
+          if (event.key === 'ArrowRight') {
+            showImageAt(currentIndex + 1);
+          } else if (event.key === 'ArrowLeft') {
+            showImageAt(currentIndex - 1);
+          } else if (event.key === 'Escape') {
+            modal.style.display = 'none';
+          }
+        }
+      });
+
+      
+      {
+        const listId = 'list-1';
+        let list = new List('list-1', {
+          valueNames: ['url', 'firefox_version', 'model_output_3', 'priority'],
+          page: 5,
+          pagination: true
+        });
+  
+        let updateCount = () => {
+          const countEl = document.getElementById("count-1");
+          countEl.textContent = `Showing ${list.matchingItems.length} result${list.matchingItems.length !== 1 ? 's' : ''}`;
+        };
+  
+        list.on('updated', updateCount);
+        updateCount();
+
+        const rowsSelector = document.querySelector(`.rows-per-page[data-list-id="${listId}"]`);
+        if (rowsSelector) {
+          rowsSelector.addEventListener('change', () => {
+            const pageSize = parseInt(rowsSelector.value, 10);
+            list.page = pageSize;
+            list.update();
+          });
+        }
+
+        const priorityFilter = document.querySelector(`.filter-priority[data-list-id="${listId}"]`);
+        if (priorityFilter) {
+          priorityFilter.addEventListener('change', () => {
+            const selected = priorityFilter.value.toLowerCase();
+            list.filter(item => {
+              const itemPriority = item.values().priority.toLowerCase();
+              return !selected || itemPriority === selected;
+            });
+          });
+        }
+
+        const toggleP5 = document.querySelector(`.toggle-p5[data-list-id="${listId}"]`);
+        if (toggleP5) {
+          const applyP5Filter = () => {
+            list.filter(item => {
+              const itemPriority = item.values().priority?.toUpperCase() || '';
+              // Default: hide P5 unless checkbox is checked
+              return toggleP5.checked || itemPriority !== 'P5';
+            });
+          };
+
+          toggleP5.addEventListener('change', applyP5Filter);
+          applyP5Filter(); // apply on load
+        }
+      }
+      
+      {
+        const listId = 'list-2';
+        let list = new List('list-2', {
+          valueNames: ['url', 'firefox_version', 'model_output_3', 'priority'],
+          page: 5,
+          pagination: true
+        });
+  
+        let updateCount = () => {
+          const countEl = document.getElementById("count-2");
+          countEl.textContent = `Showing ${list.matchingItems.length} result${list.matchingItems.length !== 1 ? 's' : ''}`;
+        };
+  
+        list.on('updated', updateCount);
+        updateCount();
+
+        const rowsSelector = document.querySelector(`.rows-per-page[data-list-id="${listId}"]`);
+        if (rowsSelector) {
+          rowsSelector.addEventListener('change', () => {
+            const pageSize = parseInt(rowsSelector.value, 10);
+            list.page = pageSize;
+            list.update();
+          });
+        }
+
+        const priorityFilter = document.querySelector(`.filter-priority[data-list-id="${listId}"]`);
+        if (priorityFilter) {
+          priorityFilter.addEventListener('change', () => {
+            const selected = priorityFilter.value.toLowerCase();
+            list.filter(item => {
+              const itemPriority = item.values().priority.toLowerCase();
+              return !selected || itemPriority === selected;
+            });
+          });
+        }
+
+        const toggleP5 = document.querySelector(`.toggle-p5[data-list-id="${listId}"]`);
+        if (toggleP5) {
+          const applyP5Filter = () => {
+            list.filter(item => {
+              const itemPriority = item.values().priority?.toUpperCase() || '';
+              // Default: hide P5 unless checkbox is checked
+              return toggleP5.checked || itemPriority !== 'P5';
+            });
+          };
+
+          toggleP5.addEventListener('change', applyP5Filter);
+          applyP5Filter(); // apply on load
+        }
+      }
+      
+      {
+        const listId = 'list-3';
+        let list = new List('list-3', {
+          valueNames: ['url', 'firefox_version', 'model_output_3', 'priority'],
+          page: 5,
+          pagination: true
+        });
+  
+        let updateCount = () => {
+          const countEl = document.getElementById("count-3");
+          countEl.textContent = `Showing ${list.matchingItems.length} result${list.matchingItems.length !== 1 ? 's' : ''}`;
+        };
+  
+        list.on('updated', updateCount);
+        updateCount();
+
+        const rowsSelector = document.querySelector(`.rows-per-page[data-list-id="${listId}"]`);
+        if (rowsSelector) {
+          rowsSelector.addEventListener('change', () => {
+            const pageSize = parseInt(rowsSelector.value, 10);
+            list.page = pageSize;
+            list.update();
+          });
+        }
+
+        const priorityFilter = document.querySelector(`.filter-priority[data-list-id="${listId}"]`);
+        if (priorityFilter) {
+          priorityFilter.addEventListener('change', () => {
+            const selected = priorityFilter.value.toLowerCase();
+            list.filter(item => {
+              const itemPriority = item.values().priority.toLowerCase();
+              return !selected || itemPriority === selected;
+            });
+          });
+        }
+
+        const toggleP5 = document.querySelector(`.toggle-p5[data-list-id="${listId}"]`);
+        if (toggleP5) {
+          const applyP5Filter = () => {
+            list.filter(item => {
+              const itemPriority = item.values().priority?.toUpperCase() || '';
+              // Default: hide P5 unless checkbox is checked
+              return toggleP5.checked || itemPriority !== 'P5';
+            });
+          };
+
+          toggleP5.addEventListener('change', applyP5Filter);
+          applyP5Filter(); // apply on load
+        }
+      }
+      
+      {
+        const listId = 'list-4';
+        let list = new List('list-4', {
+          valueNames: ['url', 'firefox_version', 'model_output_3', 'priority'],
+          page: 5,
+          pagination: true
+        });
+  
+        let updateCount = () => {
+          const countEl = document.getElementById("count-4");
+          countEl.textContent = `Showing ${list.matchingItems.length} result${list.matchingItems.length !== 1 ? 's' : ''}`;
+        };
+  
+        list.on('updated', updateCount);
+        updateCount();
+
+        const rowsSelector = document.querySelector(`.rows-per-page[data-list-id="${listId}"]`);
+        if (rowsSelector) {
+          rowsSelector.addEventListener('change', () => {
+            const pageSize = parseInt(rowsSelector.value, 10);
+            list.page = pageSize;
+            list.update();
+          });
+        }
+
+        const priorityFilter = document.querySelector(`.filter-priority[data-list-id="${listId}"]`);
+        if (priorityFilter) {
+          priorityFilter.addEventListener('change', () => {
+            const selected = priorityFilter.value.toLowerCase();
+            list.filter(item => {
+              const itemPriority = item.values().priority.toLowerCase();
+              return !selected || itemPriority === selected;
+            });
+          });
+        }
+
+        const toggleP5 = document.querySelector(`.toggle-p5[data-list-id="${listId}"]`);
+        if (toggleP5) {
+          const applyP5Filter = () => {
+            list.filter(item => {
+              const itemPriority = item.values().priority?.toUpperCase() || '';
+              // Default: hide P5 unless checkbox is checked
+              return toggleP5.checked || itemPriority !== 'P5';
+            });
+          };
+
+          toggleP5.addEventListener('change', applyP5Filter);
+          applyP5Filter(); // apply on load
+        }
+      }
+      
+    });
+  </script> 
+  
+  <div id="lightboxModal" class="lightbox-modal">
+    <span class="lightbox-close">&times;</span>
+    <span id="lightbox-prev" class="lightbox-nav" style="left: 20px;">&#10094;</span>
+    <span id="lightbox-next" class="lightbox-nav" style="right: 20px;">&#10095;</span>
+    <img class="lightbox-image" id="lightboxImage" src="" />
+  </div>
+
+</body>
+</html>
